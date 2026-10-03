@@ -1,0 +1,7 @@
+# CPU baseline; accelerator environments must use a separately recorded stack.
+jax==0.11.2
+jaxlib==0.11.2
+numpy==2.5.3
+ml_dtypes==0.6.0
+opt_einsum==3.4.0
+scipy==1.18.1
