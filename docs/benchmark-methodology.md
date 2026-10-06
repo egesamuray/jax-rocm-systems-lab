@@ -20,6 +20,14 @@ excluded. These are latency samples, not pure device kernel time. Repeated calls
 reuse resident inputs; the smoke harness does not sweep sizes or control caches,
 CPU threads, clocks, thermals, or competing load.
 
+Each JSON report (schema version 2) also has a `runtime` section: the
+`JAX_PLATFORMS` selection as JAX read it (`null` when unset), the platform
+version string reported by the XLA client of the measured device, and the
+versions of any installed JAX CUDA or ROCm plugin wheels. Because `--backend gpu`
+covers both CUDA and ROCm, these fields are meant to show which accelerator
+runtime produced a GPU report. On the CPU baseline they read `cpu`, `cpu`, and
+an empty mapping. They have not yet been exercised on accelerator hardware.
+
 The approach follows [JAX's benchmarking guidance](https://docs.jax.dev/en/latest/benchmarking.html)
 on compilation, synchronization, dtype, and data placement.
 

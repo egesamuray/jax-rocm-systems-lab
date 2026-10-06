@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import statistics
 import subprocess
 import time
@@ -14,6 +15,19 @@ import time
 import jax
 import jax.numpy as jnp
 import numpy as np
+
+
+ACCELERATOR_PLUGIN = re.compile(r"jax-(cuda|rocm)[0-9]*-(plugin|pjrt)")
+
+
+def accelerator_plugin_versions():
+    """Versions of installed JAX CUDA/ROCm plugin wheels; empty on a CPU-only stack."""
+    versions = {}
+    for dist in importlib.metadata.distributions():
+        name = (dist.metadata["Name"] or "").lower().replace("_", "-")
+        if ACCELERATOR_PLUGIN.fullmatch(name):
+            versions[name] = dist.version
+    return dict(sorted(versions.items()))
 
 
 def positive_int(value):
@@ -64,13 +78,16 @@ def run(*, backend="cpu", size=256, warmup=3, iterations=10):
     except (OSError, subprocess.CalledProcessError):
         revision, dirty = None, None
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "purpose": "harness_smoke_only",
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "git_commit": revision,
         "working_tree_dirty": dirty,
         "stack": {name: importlib.metadata.version(name) for name in
                   ("jax", "jaxlib", "numpy", "scipy", "ml_dtypes", "opt_einsum")},
+        "runtime": {"jax_platforms": jax.config.jax_platforms,
+                    "platform_version": getattr(device.client, "platform_version", None),
+                    "accelerator_plugins": accelerator_plugin_versions()},
         "host": {"os": platform.system(), "os_release": platform.release(),
                  "architecture": platform.machine(), "python": platform.python_version(),
                  "logical_cpu_count": os.cpu_count()},
