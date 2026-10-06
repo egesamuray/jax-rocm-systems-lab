@@ -1,0 +1,8 @@
+# Node context captured immediately before each run (private squeue/rocm-smi output reduced to counts)
+
+smoke: time_utc=2026-10-06T10:47:26Z loadavg=[1.91, 2.04, 0.95] other_slurm_jobs_on_node=0 gpu_use_pct=0,0
+known-value: time_utc=2026-10-06T10:48:11Z loadavg=[1.07, 1.81, 0.92] other_slurm_jobs_on_node=0 gpu_use_pct=0,0
+raw-01: time_utc=2026-10-06T10:48:15Z loadavg=[0.99, 1.78, 0.92] other_slurm_jobs_on_node=0 gpu_use_pct=0,0
+raw-02: time_utc=2026-10-06T10:48:19Z loadavg=[0.99, 1.78, 0.92] other_slurm_jobs_on_node=0 gpu_use_pct=0,0
+raw-03: time_utc=2026-10-06T10:48:24Z loadavg=[1.15, 1.80, 0.93] other_slurm_jobs_on_node=0 gpu_use_pct=0,0
+algo-info: time_utc=2026-10-06T10:48:28Z loadavg=[1.38, 1.84, 0.95] other_slurm_jobs_on_node=0 gpu_use_pct=0,0

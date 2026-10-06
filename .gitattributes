@@ -1,0 +1,2 @@
+# Raw benchmark evidence is kept exactly as the tools printed it.
+results/rccl/** -whitespace

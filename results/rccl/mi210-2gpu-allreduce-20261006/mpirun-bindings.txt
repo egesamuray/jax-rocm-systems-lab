@@ -1,0 +1,37 @@
+# mpirun --report-bindings output (stderr) and exit status for every run
+
+## smoke
+$ mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 1K -e 1M -f 2 -w 5 -n 20 -c 1 -Z json -x <outdir>/smoke.json 
+exit=0
+[<node>:1468420] Rank 0 bound to package[0][core:L0-15]
+[<node>:1468420] Rank 1 bound to package[0][core:L0-15]
+
+## known-value
+$ mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <workdir>/rccl_known_value 
+exit=0
+[<node>:1468519] Rank 0 bound to package[0][core:L0-15]
+[<node>:1468519] Rank 1 bound to package[0][core:L0-15]
+
+## raw-01
+$ mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 8 -e 128M -f 2 -w 5 -n 20 -c 1 -Z json -x <outdir>/raw-01.json 
+exit=0
+[<node>:1468569] Rank 0 bound to package[0][core:L0-15]
+[<node>:1468569] Rank 1 bound to package[0][core:L0-15]
+
+## raw-02
+$ mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 8 -e 128M -f 2 -w 5 -n 20 -c 1 -Z json -x <outdir>/raw-02.json 
+exit=0
+[<node>:1468615] Rank 0 bound to package[0][core:L0-15]
+[<node>:1468615] Rank 1 bound to package[0][core:L0-15]
+
+## raw-03
+$ mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 8 -e 128M -f 2 -w 5 -n 20 -c 1 -Z json -x <outdir>/raw-03.json 
+exit=0
+[<node>:1468661] Rank 0 bound to package[0][core:L0-15]
+[<node>:1468661] Rank 1 bound to package[0][core:L0-15]
+
+## algo-info
+$ mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 8 -e 128M -f 2 -w 5 -n 20 -c 1 -M 1 -Z json -x <outdir>/algo-info.json 
+exit=0
+[<node>:1468708] Rank 0 bound to package[0][core:L0-15]
+[<node>:1468708] Rank 1 bound to package[0][core:L0-15]

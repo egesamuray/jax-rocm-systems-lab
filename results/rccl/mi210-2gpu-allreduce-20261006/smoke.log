@@ -1,0 +1,33 @@
+# Collective test starting: all_reduce_perf
+# nThread 1 nGpus 1 minBytes 1024 maxBytes 1048576 step: 2(factor) warmup iters: 5 iters: 20 agg iters: 1 validation: 1 graph: 0
+#
+rccl-tests: Version HEAD:40b1b17
+# Using devices
+#  Rank  0 Group  0 Pid 1468424 on  <node> device  0 [0000:08:00] AMD Instinct MI210
+#  Rank  1 Group  0 Pid 1468426 on  <node> device  1 [0000:48:00] AMD Instinct MI210
+RCCL version : 2.27.7-HEAD:0d2c4fd
+HIP version  : 7.2.26015-fc0010cf6a
+ROCm version : 7.2.0.0-43-fc0010cf6a
+Hostname     : <node>
+Librccl path : /opt/rocm-7.2.0/lib/librccl.so.1
+#
+#                                                              out-of-place                       in-place          
+#       size         count      type   redop    root     time   algbw   busbw #wrong     time   algbw   busbw #wrong                               
+#        (B)    (elements)                               (us)  (GB/s)  (GB/s)            (us)  (GB/s)  (GB/s)                                      
+        1024           256     float     sum      -1    18.49    0.06    0.06      0    18.64    0.05    0.05      0
+        2048           512     float     sum      -1    21.16    0.10    0.10      0    19.62    0.10    0.10      0
+        4096          1024     float     sum      -1    18.20    0.23    0.23      0    16.86    0.24    0.24      0
+        8192          2048     float     sum      -1    17.25    0.47    0.47      0    17.81    0.46    0.46      0
+       16384          4096     float     sum      -1    27.67    0.59    0.59      0    27.98    0.59    0.59      0
+       32768          8192     float     sum      -1    29.37    1.12    1.12      0    25.53    1.28    1.28      0
+       65536         16384     float     sum      -1    26.10    2.51    2.51      0    26.94    2.43    2.43      0
+      131072         32768     float     sum      -1    28.58    4.59    4.59      0    29.52    4.44    4.44      0
+      262144         65536     float     sum      -1    33.77    7.76    7.76      0    33.72    7.78    7.78      0
+      524288        131072     float     sum      -1    46.63   11.24   11.24      0    45.83   11.44   11.44      0
+     1048576        262144     float     sum      -1    66.90   15.67   15.67      0    67.78   15.47   15.47      0
+# Errors with asterisks indicate errors that have exceeded the maximum threshold.
+# Out of bounds values : 0 OK
+# Avg bus bandwidth    : 4.02847 
+#
+# Collective test concluded: all_reduce_perf
+

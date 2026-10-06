@@ -1,0 +1,6 @@
+RCCL version : 2.27.7-HEAD:0d2c4fd
+HIP version  : 7.2.26015-fc0010cf6a
+ROCm version : 7.2.0.0-43-fc0010cf6a
+Hostname     : <node>
+Librccl path : /opt/rocm/lib/librccl.so.1
+{"collective": "AllReduce", "dtype": "float32", "op": "sum", "ranks": 2, "expected": 3.0, "devices": [{"rank": 0, "pci_bus_id": "0000:08:00.0"}, {"rank": 1, "pci_bus_id": "0000:48:00.0"}], "gcn_arch": "gfx90a:sramecc+:xnack-", "cases": [{"count": 1, "bytes": 4, "in_place": 0, "wrong": 0}, {"count": 1, "bytes": 4, "in_place": 1, "wrong": 0}, {"count": 1000, "bytes": 4000, "in_place": 0, "wrong": 0}, {"count": 1000, "bytes": 4000, "in_place": 1, "wrong": 0}, {"count": 1048576, "bytes": 4194304, "in_place": 0, "wrong": 0}, {"count": 1048576, "bytes": 4194304, "in_place": 1, "wrong": 0}, {"count": 16777219, "bytes": 67108876, "in_place": 0, "wrong": 0}, {"count": 16777219, "bytes": 67108876, "in_place": 1, "wrong": 0}], "rccl_version_code": 22707, "total_wrong": 0, "passed": true}

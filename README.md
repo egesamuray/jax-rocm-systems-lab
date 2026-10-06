@@ -4,10 +4,12 @@ A small systems lab for reproducible JAX experiments, with a future focus on
 AMD ROCm. Start with a trustworthy measurement harness, then add one experiment
 at a time.
 
-**Status: initial setup.** The repository contains a CPU matmul smoke baseline,
-a benchmark methodology scaffold, and CPU-only CI. CUDA, ROCm, RCCL, HIP/XLA FFI,
-and MaxText experiments are pending. There are no accelerator performance
-results or MI300X optimization claims.
+**Status: early.** The repository contains a CPU matmul smoke baseline, a
+benchmark methodology scaffold, CPU-only CI, and a first accelerator record: a
+correctness-checked, reproducible RCCL AllReduce baseline on 2x AMD Instinct
+MI210 ([docs/rccl-mi210-baseline.md](docs/rccl-mi210-baseline.md)). HIP/XLA FFI
+is the next roadmap stage. FFI, MaxText, and GPU runs of the JAX harness are
+pending. There are no speedup, scaling, or MI300X optimization claims.
 
 ## Goals
 
@@ -47,6 +49,10 @@ unavailable requested backend fails instead of falling back to CPU.
 ## Layout
 
 - `benchmarks/matmul.py`: one baseline and a JSON report.
+- `benchmarks/rccl_report.py`: validates and summarizes rccl-tests AllReduce
+  output; `benchmarks/rccl_known_value.cpp`: known-value RCCL check.
+- `docs/rccl-mi210-baseline.md` and `results/rccl/`: the first RCCL record and
+  its sanitized raw evidence.
 - `docs/benchmark-methodology.md`: measurement contract and reporting checklist.
 - `docs/roadmap.md`: RCCL → HIP/XLA FFI → MaxText gates.
 - `tests/` and `.github/workflows/ci.yml`: CPU correctness and smoke checks.

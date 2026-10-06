@@ -6,6 +6,7 @@ Each stage starts with a small correctness experiment and a reproducible record.
 1. **RCCL:** on an available AMD system, capture the stack and topology, run one
    small collective with a correctness oracle, then record synchronized samples.
    Exit: reproducible command, raw evidence, and a documented bandwidth definition.
+   Evidence: [2x MI210 AllReduce baseline](rccl-mi210-baseline.md) (2026-10-06).
 2. **HIP/XLA FFI:** after the RCCL record, implement one bounded kernel and
    compare it with equivalent JAX math. Check shape/dtype, ABI, stream use, buffer
    ownership, numerical correctness, and error handling before timing.

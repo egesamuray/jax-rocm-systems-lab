@@ -66,7 +66,9 @@ Failures / exclusions / limitations:
 Conclusion supported by these measurements:
 ```
 
-RCCL will require message sizes, collective type, rank count, topology, and a
-documented bandwidth definition. FFI will require stream, buffer, and ABI checks.
-MaxText will require model/config revision, batch and sequence lengths, sharding,
-loss checks, and a clear step-time boundary. These extensions remain future work.
+RCCL records require message sizes, collective type, rank count, topology, and a
+documented bandwidth definition; the first one is
+[rccl-mi210-baseline.md](rccl-mi210-baseline.md). FFI will require stream,
+buffer, and ABI checks. MaxText will require model/config revision, batch and
+sequence lengths, sharding, loss checks, and a clear step-time boundary. These
+two extensions remain future work.

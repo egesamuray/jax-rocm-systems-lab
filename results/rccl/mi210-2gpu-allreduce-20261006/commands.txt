@@ -1,0 +1,44 @@
+# Exact command sequence for this record (2026-10-06 UTC), in execution order.
+# Placeholders: <workdir> = the job's node-local temporary directory,
+# <openmpi-prefix> = <workdir>/ompi, <rccl-tests> = <workdir>/rccl-tests,
+# <outdir> = a private output directory, <jobid> = the Slurm job ID.
+# Nothing else was set or changed; no RCCL/NCCL tuning variables were used.
+
+## 1. Allocation: one node, both MI210s, 16 cores on the GPUs' socket
+salloc --no-shell -p general -N1 -n1 --gres=gpu:mi210:2 --gres-flags=enforce-binding -c 16 --mem=64G -t 03:00:00 -J rccl1
+# Every step below ran inside the allocation as:
+srun --jobid=<jobid> -n1 -c16 --gres=gpu:mi210:2 bash -s < step.sh
+
+## 2. Open MPI 5.0.11 (the cluster has no MPI); user prefix, deleted with the job
+cd <workdir>
+curl -fsSL -o openmpi-5.0.11.tar.bz2 https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.11.tar.bz2
+echo "e668a3c4acd50c41dc204c8a6dd98a611e0f26af89cf677577fa9be8a2698003  openmpi-5.0.11.tar.bz2" | sha256sum -c -
+tar xjf openmpi-5.0.11.tar.bz2 && cd openmpi-5.0.11
+./configure --prefix=<openmpi-prefix> --without-slurm --disable-mpi-fortran --disable-oshmem --without-ucx --without-ofi --without-cuda --without-rocm
+make -j16 && make install
+
+## 3. rccl-tests at a pinned commit, gfx90a only, MPI enabled; site ROCm 7.2.0 and RCCL 2.27.7
+cd <workdir>
+git clone --quiet https://github.com/ROCm/rccl-tests.git && cd rccl-tests
+git checkout --quiet 40b1b17901370a7880d4a56854b5361c89f8d324
+make -j16 MPI=1 MPI_HOME=<openmpi-prefix> NCCL_HOME=/opt/rocm GPU_TARGETS=gfx90a
+
+## 4. Known-value oracle (benchmarks/rccl_known_value.cpp from this repository)
+PATH=<openmpi-prefix>/bin:$PATH mpicxx -O2 -std=c++17 -D__HIP_PLATFORM_AMD__ -I/opt/rocm/include <workdir>/rccl_known_value.cpp -L/opt/rocm/lib -lrccl -lamdhip64 -Wl,-rpath,/opt/rocm/lib -o <workdir>/rccl_known_value
+
+## 5. Runs (environment for all of them)
+export PATH=<openmpi-prefix>/bin:$PATH
+export LD_LIBRARY_PATH=<openmpi-prefix>/lib:$LD_LIBRARY_PATH
+# smoke gate (1 KiB to 1 MiB)
+mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 1K -e 1M -f 2 -w 5 -n 20 -c 1 -Z json -x <outdir>/smoke.json < /dev/null > smoke.log
+# secondary oracle
+mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <workdir>/rccl_known_value < /dev/null > known-value.log
+# baseline: three independent fresh-process runs with identical arguments
+for i in 01 02 03; do
+  mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 8 -e 128M -f 2 -w 5 -n 20 -c 1 -Z json -x <outdir>/raw-$i.json < /dev/null > raw-$i.log
+done
+# diagnostic only (not part of the baseline): report RCCL's default algorithm/protocol per size
+mpirun -np 2 --bind-to numa --report-bindings -x NCCL_DEBUG=VERSION -x LD_LIBRARY_PATH <rccl-tests>/build/all_reduce_perf -g 1 -d float -o sum -b 8 -e 128M -f 2 -w 5 -n 20 -c 1 -M 1 -Z json -x <outdir>/algo-info.json < /dev/null > algo-info.log
+
+## 6. Summary (from the repository root, any machine)
+python -m benchmarks.rccl_report results/rccl/mi210-2gpu-allreduce-20261006/raw-0{1,2,3}.json --ranks 2 --output results/rccl/mi210-2gpu-allreduce-20261006/summary.json
