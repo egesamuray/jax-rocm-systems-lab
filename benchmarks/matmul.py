@@ -24,9 +24,12 @@ def accelerator_plugin_versions():
     """Versions of installed JAX CUDA/ROCm plugin wheels; empty on a CPU-only stack."""
     versions = {}
     for dist in importlib.metadata.distributions():
-        name = (dist.metadata["Name"] or "").lower().replace("_", "-")
+        # .get(): an incomplete .dist-info lacks fields, and metadata["Name"] on it
+        # is deprecated (DeprecationWarning now, KeyError in future Pythons).
+        metadata = dist.metadata
+        name = (metadata.get("Name") or "").lower().replace("_", "-")
         if ACCELERATOR_PLUGIN.fullmatch(name):
-            versions[name] = dist.version
+            versions[name] = metadata.get("Version")
     return dict(sorted(versions.items()))
 
 
