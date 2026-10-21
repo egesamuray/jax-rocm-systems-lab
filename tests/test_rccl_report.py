@@ -98,7 +98,8 @@ def test_record_cross_checks_both_bandwidths():
 
 
 @pytest.mark.parametrize(("wrong", "message"), [('"3"', "correctness failure: 3"),
-                                                 ('"N/A"', "not checked")])
+                                                 ('"N/A"', "not checked"),
+                                                 ('"3", "wrong":"0"', "duplicate key")])
 def test_failed_or_unchecked_correctness_is_rejected(tmp_path, wrong, message):
     records = [record_text(size, p, 10.0, wrong=wrong if size == 32 else '"0"')
                for size in SIZES for p in (0, 1)]

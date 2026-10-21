@@ -50,6 +50,14 @@ def _reject_constant(token):
     raise ReportError(f"non-finite JSON constant {token}")
 
 
+def _unique_keys(pairs):
+    # json keeps the last duplicate, so {"wrong": "3", "wrong": "0"} would read as 0.
+    record = dict(pairs)
+    if len(record) != len(pairs):
+        raise ReportError("duplicate key in a JSON object")
+    return record
+
+
 def _number(record, key, kind):
     value = record[key]
     if isinstance(value, bool) or not isinstance(value, (int, float)):
@@ -159,7 +167,8 @@ def load_run(json_path, *, ranks, gpus_per_rank=1):
     json_path = Path(json_path)
     raw = json_path.read_bytes()
     try:
-        records = json.loads(raw, parse_constant=_reject_constant)
+        records = json.loads(raw, parse_constant=_reject_constant,
+                             object_pairs_hook=_unique_keys)
     except json.JSONDecodeError as error:
         raise ReportError(f"malformed JSON in {json_path.name}: {error}") from None
     if not isinstance(records, list) or not records:

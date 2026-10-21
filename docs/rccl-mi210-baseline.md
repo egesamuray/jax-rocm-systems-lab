@@ -69,8 +69,8 @@ each JSON file together with the stdout log of the same name.
 - **Result.** `#wrong` is 0 in all 150 baseline records (25 sizes x 2 placements
   x 3 runs) and all 22 smoke records (1 KiB to 1 MiB). Every log ends with
   `Out of bounds values : 0 OK`. `rccl_report.py` rejects any record whose
-  `#wrong` is non-zero or `N/A`, so the summary could not have been produced
-  otherwise.
+  `#wrong` is non-zero or `N/A`, and any JSON object with a duplicated key, so
+  the summary could not have been produced otherwise.
 - **Known-value check (secondary).** [`benchmarks/rccl_known_value.cpp`](../benchmarks/rccl_known_value.cpp)
   has rank r contribute the constant r + 1. Every output element must equal 3.0
   exactly, and the receive buffer is pre-filled with NaN. It covered 1, 1000,
